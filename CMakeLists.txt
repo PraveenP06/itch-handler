@@ -1,0 +1,37 @@
+cmake_minimum_required(VERSION 3.20)
+project(itch_handler CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+if(NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE Release)
+endif()
+
+option(ITCH_SANITIZE "Build with sanitizers (address,undefined or thread)" "")
+
+add_library(itch INTERFACE)
+target_include_directories(itch INTERFACE include)
+target_compile_options(itch INTERFACE -Wall -Wextra -Wpedantic -Wconversion)
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+  target_compile_options(itch INTERFACE -O3 -mcpu=native)
+endif()
+if(ITCH_SANITIZE)
+  target_compile_options(itch INTERFACE -fsanitize=${ITCH_SANITIZE} -fno-omit-frame-pointer -g)
+  target_link_options(itch INTERFACE -fsanitize=${ITCH_SANITIZE})
+endif()
+
+find_package(doctest REQUIRED)
+enable_testing()
+file(GLOB TEST_SOURCES CONFIGURE_DEPENDS tests/*.cpp)
+add_executable(itch_tests ${TEST_SOURCES})
+target_link_libraries(itch_tests PRIVATE itch doctest::doctest)
+add_test(NAME itch_tests COMMAND itch_tests)
+
+find_package(ZLIB REQUIRED)
+add_executable(replay tools/replay.cpp)
+target_link_libraries(replay PRIVATE itch ZLIB::ZLIB)
+
+add_executable(bench tools/bench.cpp)
+target_link_libraries(bench PRIVATE itch)
