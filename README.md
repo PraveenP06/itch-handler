@@ -42,9 +42,9 @@ Per-message latency, parse + book update (without prefetch), taken as the mean o
 Memory allocations after the first 100,000 messages (stock setup): 1,216 over 60 million messages, which is close to zero but not zero. They come from stocks whose price levels outgrow the reserved capacity.
 
 What the numbers say:
-- Parsing is cheap. The book update dominates, mostly because of cache misses on the 16M-entry order table.
+- Parsing is cheap. The book update dominates. The gain from prefetching suggests cache misses on the 16M-entry order table are a large part of it (not profiled).
 - Prefetching the order-table slot a few messages ahead improved single-thread throughput by about 30%.
-- The two-thread pipeline is slower than the single thread with prefetch. Copying 48-byte events through the ring costs more than the parse work it takes off the book thread.
+- The two-thread pipeline is slower than the single thread with prefetch. Likely the cost of passing 48-byte events through the ring outweighs the parse work it takes off the book thread (not profiled).
 - Full day, including gunzip, single thread, no prefetch in the replay tool: 353,357,889 messages in 44.6 s (7.9 M msg/s).
 
 Not measured: wire-to-book latency over a network, SIMD parsing, or CPU pinning. macOS offers no thread pinning and `rdtsc`/AVX-512 are x86 only.
