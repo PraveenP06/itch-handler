@@ -35,3 +35,6 @@ target_link_libraries(replay PRIVATE itch ZLIB::ZLIB)
 
 add_executable(bench tools/bench.cpp)
 target_link_libraries(bench PRIVATE itch)
+
+add_executable(export tools/export.cpp)
+target_link_libraries(export PRIVATE itch ZLIB::ZLIB)
