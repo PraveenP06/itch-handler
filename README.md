@@ -23,6 +23,9 @@ It listens on localhost only by default. On the droplet it runs as a systemd ser
 - A bug found on the way: the feed shares one sequence counter between the book and heartbeat channels, so counting only book messages reported tens of thousands of false gaps. Sequence tracking now looks at every message.
 - This is Level 2 (totals per price), not order by order, and it is live crypto data, not ITCH. The reported latency is the engine's parse and apply time per message, not network latency.
 
+## Web front end
+`web/` is a Next.js, Tailwind and shadcn/ui site with three pages: an overview with the measured results, an interactive replay of the NASDAQ day (stock tabs, play, scrub, charts), and the live Bitcoin book with an automatic fall back to a recorded session. See `web/README.md`. Deploy on Vercel with the Root Directory set to `web`.
+
 ## Build and test
 ```
 cmake -S . -B build -G Ninja
