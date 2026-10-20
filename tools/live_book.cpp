@@ -38,12 +38,14 @@ void send_all(int fd, const std::string& data) {
   }
 }
 
-std::string response(const char* status, const char* type, const std::string& body) {
-  return std::string("HTTP/1.1 ") + status + "\r\nContent-Type: " + type + "\r\nContent-Length: " + std::to_string(body.size()) +
-         "\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n" + body;
+std::string response(const char* status, const char* type, const std::string& body, const std::string& allow_origin) {
+  std::string head = std::string("HTTP/1.1 ") + status + "\r\nContent-Type: " + type + "\r\nContent-Length: " + std::to_string(body.size()) +
+                     "\r\nCache-Control: no-store\r\nConnection: close\r\n";
+  if (!allow_origin.empty()) head += "Access-Control-Allow-Origin: " + allow_origin + "\r\nVary: Origin\r\n";
+  return head + "\r\n" + body;
 }
 
-void serve(int listener, Shared& shared) {
+void serve(int listener, Shared& shared, const std::string& allow_origin) {
   for (;;) {
     const int fd = ::accept(listener, nullptr, nullptr);
     if (fd < 0) continue;
@@ -61,13 +63,13 @@ void serve(int listener, Shared& shared) {
           const auto age = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - shared.last_message).count();
           json = live::render_json(shared.view, static_cast<std::uint64_t>(age));
         }
-        send_all(fd, response("200 OK", "application/json", json));
+        send_all(fd, response("200 OK", "application/json", json, allow_origin));
       } else if (request.rfind("GET / ", 0) == 0) {
-        send_all(fd, response("200 OK", "text/html; charset=utf-8", live::kPage));
+        send_all(fd, response("200 OK", "text/html; charset=utf-8", live::kPage, allow_origin));
       } else if (request.rfind("GET /healthz ", 0) == 0) {
-        send_all(fd, response("200 OK", "text/plain", "ok"));
+        send_all(fd, response("200 OK", "text/plain", "ok", allow_origin));
       } else {
-        send_all(fd, response("404 Not Found", "text/plain", "not found"));
+        send_all(fd, response("404 Not Found", "text/plain", "not found", allow_origin));
       }
     }
     ::close(fd);
@@ -94,13 +96,15 @@ int main(int argc, char** argv) {
   int port = 8080;
   std::size_t depth = 15;
   bool dump_final = false;
+  std::string allow_origin;
   for (int i = 1; i < argc; ++i) {
     const std::string a = argv[i];
     if (a == "--port" && i + 1 < argc) port = std::atoi(argv[++i]);
     else if (a == "--bind" && i + 1 < argc) address = argv[++i];
+    else if (a == "--allow-origin" && i + 1 < argc) allow_origin = argv[++i];
     else if (a == "--dump-final") dump_final = true;
     else if (a == "--depth" && i + 1 < argc) depth = static_cast<std::size_t>(std::atoi(argv[++i]));
-    else { std::fprintf(stderr, "usage: live_book [--port N] [--bind ADDR] [--depth N]  < raw l2 messages, one per line\n"); return 2; }
+    else { std::fprintf(stderr, "usage: live_book [--port N] [--bind ADDR] [--depth N] [--allow-origin URL]  < raw l2 messages, one per line\n"); return 2; }
   }
   ::signal(SIGPIPE, SIG_IGN);
   Shared shared;
@@ -108,7 +112,7 @@ int main(int argc, char** argv) {
     const int listener = listen_on(address.c_str(), port);
     if (listener < 0) { std::fprintf(stderr, "cannot listen on %s:%d\n", address.c_str(), port); return 1; }
     std::fprintf(stderr, "live_book serving http://%s:%d\n", address.c_str(), port);
-    std::thread server(serve, listener, std::ref(shared));
+    std::thread server(serve, listener, std::ref(shared), allow_origin);
     server.detach();
   }
 
