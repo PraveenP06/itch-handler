@@ -10,6 +10,19 @@ A C++20 NASDAQ ITCH 5.0 feed handler and limit order book. It replays a real ful
 - `tools/replay.cpp`: streams a `.gz` ITCH file through the parser and book and prints message and error counts.
 - `tools/bench.cpp`: throughput and latency benchmark on an in-memory slice.
 
+## Live mode (Coinbase BTC-USD, Level 2)
+A second program, `live_book`, rebuilds a live book from Coinbase's public `l2_data` feed. A separate Python process (`orderbook-lab stream`) holds the websocket and writes one raw message per line to stdout; `live_book` reads them from stdin, parses the JSON with a hand-written scanner, applies the price-level changes, and serves a JSON endpoint (`/book`) plus a live page (`/`).
+
+```
+orderbook-lab stream --product BTC-USD | ./build/live_book --bind 127.0.0.1 --port 8080
+```
+It listens on localhost only by default. On the droplet it runs as a systemd service and is viewed through an SSH tunnel.
+
+- `include/live/l2_parser.hpp`, `l2_book.hpp`, `live_stats.hpp`, `render.hpp`: parser, book, sequence-gap and latency tracking, JSON rendering. All unit tested.
+- Verified by replaying 2,764,755 recorded messages (60,076,531 level updates, 87 snapshots) through `live_book --dump-final`: the final best bid and ask match the Python replay of the same recordings exactly, with zero sequence gaps and zero crossed books.
+- A bug found on the way: the feed shares one sequence counter between the book and heartbeat channels, so counting only book messages reported tens of thousands of false gaps. Sequence tracking now looks at every message.
+- This is Level 2 (totals per price), not order by order, and it is live crypto data, not ITCH. The reported latency is the engine's parse and apply time per message, not network latency.
+
 ## Build and test
 ```
 cmake -S . -B build -G Ninja
