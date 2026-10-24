@@ -24,6 +24,33 @@ const ideas = [
   },
 ]
 
+const uses = [
+  {
+    title: "Know what a trade will really cost",
+    body: "The book shows the spread and how much is on offer at each price. A big order eats through the levels, so the depth chart tells you the price you would actually get.",
+    href: "/live",
+    link: "See the depth chart",
+  },
+  {
+    title: "Test trading ideas on real history",
+    body: "Replay a real day and ask what your order would have done. My earlier simulator did this with crypto fees: at a 0.90% taker fee a round trip costs about 180 bps, while typical price moves were about 1 bp. That is why my arbitrage bots lost.",
+    href: "/replay",
+    link: "Replay a day",
+  },
+  {
+    title: "Trust the picture",
+    body: "A trading system is only as good as its view of the market. A wrong book means wrong decisions, so the engine counts every error and every gap in the feed. Here that is 0 errors over 353 million messages.",
+    href: "/live",
+    link: "See the live counters",
+  },
+  {
+    title: "Keep up with the market",
+    body: "At the open, millions of messages arrive in minutes. A slow engine falls behind and shows old prices. This one takes about 57 nanoseconds per message at the median.",
+    href: "/live",
+    link: "Watch the engine's timing",
+  },
+]
+
 const limits = [
   "The NASDAQ replay is a recorded day, not a live feed. NASDAQ's live feed is a paid, licensed product.",
   "The live page is Bitcoin from Coinbase. It is a different, simpler kind of data than NASDAQ's.",
@@ -70,6 +97,24 @@ export default async function Home() {
             <p className="text-sm leading-relaxed text-muted-foreground">{idea.body}</p>
           </div>
         ))}
+      </section>
+
+      <section className="space-y-5 rounded-2xl border border-bid/40 bg-card p-6">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-bold">How is this useful?</h2>
+          <p className="max-w-2xl text-muted-foreground">Every trading program needs to know what is on offer right now. This is the part that keeps that picture right, and fast.</p>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {uses.map((u) => (
+            <div key={u.title} className="space-y-2">
+              <h3 className="font-semibold">{u.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{u.body}</p>
+              <Link href={u.href} className="inline-flex items-center gap-1 text-sm font-medium text-bid hover:underline">
+                {u.link} <ArrowRight className="size-3.5" />
+              </Link>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="grid gap-6 md:grid-cols-2">
