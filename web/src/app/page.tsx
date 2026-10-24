@@ -16,10 +16,10 @@ const steps = [
   { icon: Layers, text: "You see every price level move", tip: null },
 ] as const
 
-const uses = [
+const buildUses = (day: { messages: number }) => [
   { icon: Scale, title: "Know the real price", line: "Depth shows what a big order would actually pay.", href: "/live", tone: "bid" },
   { icon: FlaskConical, title: "Test ideas on real history", line: "My simulator showed fees ate 180 times a typical price move.", href: "/replay", tone: "ask" },
-  { icon: ShieldCheck, title: "Trust the picture", line: "Zero errors across 353 million messages.", href: "/replay", tone: "ok" },
+  { icon: ShieldCheck, title: "Trust the picture", line: `Zero errors across ${(day.messages / 1e9).toFixed(1)} billion messages.`, href: "/replay", tone: "ok" },
   { icon: Gauge, title: "Keep up at the open", line: "About 57 nanoseconds per message.", href: "/live", tone: "bid" },
 ] as const
 
@@ -38,10 +38,11 @@ const toneClasses = {
 
 export default async function Home() {
   const day = await getDaySummary()
+  const uses = buildUses(day)
   const facts = [
-    { icon: Zap, tone: "bid", value: day.messages, suffix: "", decimals: 0, label: "NASDAQ messages replayed" },
-    { icon: ShieldCheck, tone: "ok", value: day.bookErrors, suffix: "", decimals: 0, label: "book errors" },
-    { icon: Timer, tone: "ask", value: benchmark.fullDay.seconds, suffix: " s", decimals: 1, label: "for the whole day, one laptop" },
+    { icon: Zap, tone: "bid", value: day.messages, suffix: "", decimals: 0, label: `NASDAQ messages, ${day.days} trading days` },
+    { icon: ShieldCheck, tone: "ok", value: day.bookErrors, suffix: "", decimals: 0, label: "book errors in total" },
+    { icon: Timer, tone: "ask", value: benchmark.fullDay.seconds, suffix: " s", decimals: 1, label: "for one full day, one laptop" },
     { icon: Gauge, tone: "bid", value: benchmark.latencyNs.p50, suffix: " ns", decimals: 0, label: "typical time per message" },
   ] as const
   return (

@@ -3,7 +3,7 @@
 Next.js 16, TypeScript, Tailwind and shadcn/ui front end for the order book engine.
 
 - `/` overview, measured speed and what is not claimed
-- `/replay` the NASDAQ ITCH trading day of 28 Nov 2025, rebuilt order by order
+- `/replay` six NASDAQ ITCH trading days (28 Nov and 8 to 12 Dec 2025), rebuilt order by order
 - `/live` the live Bitcoin book from the C++ engine, with an automatic fall back to a recorded session
 
 ## Run
@@ -15,7 +15,7 @@ npm run build
 ```
 
 ## Data
-- `public/data/itch-day.json` is produced by `export` in the parent project: `./build/export S112825-v50.txt.gz AAPL,MSFT,NVDA,QQQ,SPY,TSLA 30 itch-day.json`.
+- `public/data/days/<date>.json` is produced by `export` in the parent project, for example `./build/export S120825-v50.txt.gz AAPL,MSFT,NVDA,QQQ,SPY,TSLA 30 2025-12-08.json`. Run `node scripts/build-day-index.mjs` afterwards to refresh `index.json`.
 - `public/data/live-sample.json` is five minutes of the live engine's real `/book` output.
 - Both files are validated with Zod when loaded.
 

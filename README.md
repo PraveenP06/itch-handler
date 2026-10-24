@@ -35,7 +35,7 @@ cmake --build build
 Sanitizer builds: `-DITCH_SANITIZE=address,undefined` or `-DITCH_SANITIZE=thread` with `-DCMAKE_BUILD_TYPE=Debug`.
 
 ## Data
-Free NASDAQ sample files: https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/ (this project was run on `S112825-v50.txt.gz`, 28 Nov 2025). Files are not stored in the repo.
+Free NASDAQ sample files: https://emi.nasdaq.com/ITCH/Nasdaq%20ITCH/ (the benchmarks use `S112825-v50.txt.gz`, 28 Nov 2025; the web replay also covers 8 to 12 Dec 2025, all with zero book errors and no live orders left at the close). Files are not stored in the repo.
 
 ## Correctness
 - Unit tests for every message type and book operation.

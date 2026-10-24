@@ -1,0 +1,34 @@
+{
+  "days": [
+    {
+      "date": "2025-11-28",
+      "messages": 353357889,
+      "book_errors": 0
+    },
+    {
+      "date": "2025-12-08",
+      "messages": 650338709,
+      "book_errors": 0
+    },
+    {
+      "date": "2025-12-09",
+      "messages": 589560010,
+      "book_errors": 0
+    },
+    {
+      "date": "2025-12-10",
+      "messages": 846781990,
+      "book_errors": 0
+    },
+    {
+      "date": "2025-12-11",
+      "messages": 775074451,
+      "book_errors": 0
+    },
+    {
+      "date": "2025-12-12",
+      "messages": 923744247,
+      "book_errors": 0
+    }
+  ]
+}

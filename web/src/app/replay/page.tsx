@@ -8,7 +8,7 @@ export default function ReplayPage() {
     <div className="space-y-6">
       <header className="space-y-2">
         <h1 className="text-3xl font-bold sm:text-4xl">Replay a NASDAQ day</h1>
-        <p className="max-w-2xl text-muted-foreground">28 Nov 2025. Every order, rebuilt by the engine.</p>
+        <p className="max-w-2xl text-muted-foreground">Pick a day and a stock, then press play. Every order, rebuilt by the engine.</p>
       </header>
       <ReplayPanel />
     </div>

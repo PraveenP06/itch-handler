@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { messageMix, midPrice, parseItchDay, sessionOpenIndex } from "./itch"
+import { dayChange, messageMix, midPrice, parseItchDay, sessionOpenIndex } from "./itch"
 
 const raw = {
   messages: 1000,
@@ -64,5 +64,18 @@ describe("messageMix", () => {
     const other = mix.find((m) => m.label === "Other")
     expect(other?.count).toBe(15)
     expect(mix.reduce((sum, m) => sum + m.count, 0)).toBe(1000)
+  })
+})
+
+describe("dayChange", () => {
+  const snap = (time: number, bid: number, ask: number) => ({ time, bids: [{ price: bid, size: 1 }], asks: [{ price: ask, size: 1 }] })
+
+  it("compares the mid at the 9:30 open with the last mid before the 4pm close", () => {
+    const change = dayChange([snap(30000, 90, 92), snap(34200, 99, 101), snap(57600, 109, 111), snap(61200, 150, 152)])
+    expect(change).toEqual({ open: 100, close: 110, pct: 10 })
+  })
+
+  it("is null when the stock never quoted during the session", () => {
+    expect(dayChange([{ time: 34200, bids: [], asks: [] }])).toBeNull()
   })
 })

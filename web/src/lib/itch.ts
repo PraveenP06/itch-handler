@@ -76,3 +76,17 @@ export function messageMix(day: ItchDay): MixRow[] {
   ]
   return rows.map(([label, count]) => ({ label, count, share: day.messages > 0 ? count / day.messages : 0 }))
 }
+
+const CLOSE_SECONDS = 57_600
+
+export type DayChange = { open: number; close: number; pct: number }
+
+export function dayChange(snapshots: ItchSnapshot[]): DayChange | null {
+  const opening = snapshots.slice(sessionOpenIndex(snapshots)).map(midPrice).find((m) => m !== null)
+  const closing = snapshots
+    .filter((s) => s.time <= CLOSE_SECONDS)
+    .map(midPrice)
+    .findLast((m) => m !== null)
+  if (opening == null || closing == null) return null
+  return { open: opening, close: closing, pct: ((closing - opening) / opening) * 100 }
+}
