@@ -13,7 +13,7 @@ const config = {
 export function LatencyChart({ points }: { points: LatencyPoint[] }) {
   const data = useMemo(() => points.map((p, i) => ({ i, p50: p.p50Ns / 1000, p99: p.p99Ns / 1000 })), [points])
   return (
-    <ChartContainer config={config} className="h-48 w-full">
+    <ChartContainer config={config} className="h-72 w-full">
       <LineChart data={data} margin={{ left: 4, right: 12, top: 8 }}>
         <CartesianGrid vertical={false} />
         <XAxis dataKey="i" hide />

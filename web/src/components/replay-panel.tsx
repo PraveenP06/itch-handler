@@ -103,9 +103,7 @@ function Replay({ day }: { day: ItchDay }) {
         <Card className="min-w-0">
           <CardHeader>
             <CardTitle>Order book</CardTitle>
-            <CardDescription>
-              Top {DEPTH} levels each side, rebuilt from individual orders. Snapshots every 30 seconds of exchange time.
-            </CardDescription>
+            <CardDescription>Top {DEPTH} levels per side.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <ToggleGroup
@@ -160,7 +158,7 @@ function Replay({ day }: { day: ItchDay }) {
           <Card>
             <CardHeader>
               <CardTitle>{symbol} through the day</CardTitle>
-              <CardDescription>Mid price from the rebuilt book. Click the chart to jump to a time.</CardDescription>
+              <CardDescription>Click the chart to jump to a time.</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={priceConfig} className="h-64 w-full">
@@ -189,7 +187,7 @@ function Replay({ day }: { day: ItchDay }) {
           <Card>
             <CardHeader>
               <CardTitle>The whole market, per minute</CardTitle>
-              <CardDescription>Messages across all {formatInt(day.byType.directory ?? 0)} listed stocks, not just the ones shown. The open and the close dwarf the rest of the day.</CardDescription>
+              <CardDescription>All {formatInt(day.byType.directory ?? 0)} stocks, messages per minute.</CardDescription>
             </CardHeader>
             <CardContent>
               <ChartContainer config={activityConfig} className="h-40 w-full">
@@ -207,7 +205,7 @@ function Replay({ day }: { day: ItchDay }) {
         <Card>
           <CardHeader>
             <CardTitle>What the {formatInt(day.messages)} messages are</CardTitle>
-            <CardDescription>Most orders are added and then removed without ever trading.</CardDescription>
+            <CardDescription>Most orders are added, then removed.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-3 sm:grid-cols-2">
             {mix.map((m) => (

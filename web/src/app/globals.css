@@ -72,17 +72,17 @@
   --border: oklch(0.89 0.012 250);
   --input: oklch(0.89 0.012 250);
   --ring: oklch(0.55 0.17 258);
-  --chart-1: oklch(0.52 0.19 258);
-  --chart-2: oklch(0.6 0.17 45);
+  --chart-1: oklch(0.55 0.19 245);
+  --chart-2: oklch(0.64 0.19 45);
   --chart-3: oklch(0.6 0.04 250);
   --chart-4: oklch(0.45 0.04 250);
   --chart-5: oklch(0.8 0.02 250);
   --radius: 0.75rem;
-  --bid: oklch(0.52 0.19 258);
-  --bid-soft: oklch(0.9 0.05 258);
-  --ask: oklch(0.58 0.17 45);
-  --ask-soft: oklch(0.92 0.05 55);
-  --ok: oklch(0.55 0.14 155);
+  --bid: oklch(0.55 0.19 245);
+  --bid-soft: oklch(0.91 0.07 235);
+  --ask: oklch(0.64 0.19 45);
+  --ask-soft: oklch(0.93 0.07 55);
+  --ok: oklch(0.58 0.16 155);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -94,9 +94,9 @@
 }
 
 .dark {
-  --background: oklch(0.155 0.02 245);
+  --background: oklch(0.14 0.03 265);
   --foreground: oklch(0.94 0.01 245);
-  --card: oklch(0.2 0.025 245);
+  --card: oklch(0.19 0.035 265);
   --card-foreground: oklch(0.94 0.01 245);
   --popover: oklch(0.2 0.025 245);
   --popover-foreground: oklch(0.94 0.01 245);
@@ -112,16 +112,16 @@
   --border: oklch(1 0 0 / 11%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.7 0.14 255);
-  --chart-1: oklch(0.72 0.14 255);
-  --chart-2: oklch(0.78 0.14 55);
+  --chart-1: oklch(0.8 0.14 215);
+  --chart-2: oklch(0.77 0.18 50);
   --chart-3: oklch(0.65 0.04 245);
   --chart-4: oklch(0.8 0.03 245);
   --chart-5: oklch(0.5 0.03 245);
-  --bid: oklch(0.72 0.14 255);
-  --bid-soft: oklch(0.3 0.07 255);
-  --ask: oklch(0.78 0.14 55);
-  --ask-soft: oklch(0.32 0.07 50);
-  --ok: oklch(0.75 0.14 160);
+  --bid: oklch(0.8 0.14 215);
+  --bid-soft: oklch(0.36 0.09 225);
+  --ask: oklch(0.77 0.18 50);
+  --ask-soft: oklch(0.38 0.1 45);
+  --ok: oklch(0.8 0.17 155);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -151,7 +151,7 @@
 
 @keyframes level-flash {
   from {
-    opacity: 0.55;
+    opacity: 0.32;
   }
   to {
     opacity: 0;
@@ -167,4 +167,16 @@
   .level-flash {
     display: none;
   }
+}
+
+.app-glow {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: -1;
+  height: 38rem;
+  pointer-events: none;
+  background:
+    radial-gradient(48rem 24rem at 12% -8%, color-mix(in oklab, var(--bid) 26%, transparent), transparent 70%),
+    radial-gradient(44rem 22rem at 92% 4%, color-mix(in oklab, var(--ask) 20%, transparent), transparent 70%);
+  mask-image: linear-gradient(to bottom, black 40%, transparent);
 }

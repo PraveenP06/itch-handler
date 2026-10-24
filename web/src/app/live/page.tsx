@@ -7,10 +7,8 @@ export default function LivePage() {
   return (
     <div className="space-y-6">
       <header className="space-y-2">
-        <h1 className="text-3xl font-bold sm:text-4xl">The live Bitcoin book</h1>
-        <p className="max-w-2xl text-muted-foreground">
-          Coinbase&apos;s feed arrives as text. A Python process holds the connection and a C++ engine parses every message and keeps the book.
-        </p>
+        <h1 className="text-3xl font-bold sm:text-4xl">Live Bitcoin</h1>
+        <p className="max-w-2xl text-muted-foreground">Real Coinbase data, rebuilt by the C++ engine.</p>
       </header>
       <LivePanel />
     </div>

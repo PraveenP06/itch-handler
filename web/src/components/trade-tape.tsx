@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils"
 import { formatUsd } from "@/lib/format"
 import { type Trade, buyShare } from "@/lib/trades"
 
-const SHOWN = 14
+const SHOWN = 10
 const clock = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
 
 export function TradeTape({ trades, connected }: { trades: Trade[]; connected: boolean }) {

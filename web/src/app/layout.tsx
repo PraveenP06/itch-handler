@@ -21,6 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <TooltipProvider>
+            <div aria-hidden className="app-glow" />
             <SiteHeader />
             <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
           </TooltipProvider>

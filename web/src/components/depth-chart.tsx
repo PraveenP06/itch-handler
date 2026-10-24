@@ -25,7 +25,7 @@ export function DepthChart({ bids, asks }: Props) {
 
   if (data.length === 0) return null
   return (
-    <ChartContainer config={config} className="h-48 w-full">
+    <ChartContainer config={config} className="h-72 w-full">
       <AreaChart data={data} margin={{ left: 4, right: 12, top: 8 }}>
         <CartesianGrid vertical={false} />
         <XAxis dataKey="price" type="number" domain={domain} tickCount={5} tickFormatter={(v: number) => v.toFixed(0)} />
