@@ -119,9 +119,7 @@ export function LivePanel() {
           <CardHeader>
             <CardTitle>Recent trades</CardTitle>
             <CardDescription>
-              {mode === "live"
-                ? "Streamed from Coinbase straight to your browser. The C++ engine rebuilds the book; it does not see trades."
-                : "Trades appear when the page is connected to the live engine."}
+              {mode === "live" ? "Live trades from Coinbase. The C++ engine rebuilds the book." : "Trades appear when the page is connected to the live engine."}
             </CardDescription>
           </CardHeader>
           <CardContent>{mode === "live" ? <TradeTape trades={trades} connected={connected} /> : <p className="text-sm text-muted-foreground">Not connected.</p>}</CardContent>
