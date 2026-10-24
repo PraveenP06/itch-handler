@@ -148,3 +148,23 @@
   h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
   .num { font-family: var(--font-numeric); font-variant-numeric: tabular-nums; }
 }
+
+@keyframes level-flash {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.level-flash {
+  animation: level-flash 650ms ease-out forwards;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .level-flash {
+    display: none;
+  }
+}

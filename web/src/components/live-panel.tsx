@@ -2,16 +2,21 @@
 
 import { useMemo } from "react"
 import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts"
+import { DepthChart } from "@/components/depth-chart"
 import { LadderView } from "@/components/ladder-view"
+import { LatencyChart } from "@/components/latency-chart"
 import { StatCard } from "@/components/stat-card"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { type ChartConfig, ChartContainer } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
+import { TradeTape } from "@/components/trade-tape"
 import { useLiveFeed } from "@/hooks/use-live-feed"
+import { useTrades } from "@/hooks/use-trades"
 import { formatInt, formatNs } from "@/lib/format"
 import { buildLadder } from "@/lib/ladder"
 import { isStale } from "@/lib/live"
+import { tightDomain } from "@/lib/series"
 
 const DEPTH = 12
 const config = { mid: { label: "Mid price", color: "var(--chart-1)" } } satisfies ChartConfig
@@ -36,16 +41,11 @@ function StatusBadge({ mode, stale, ageMs }: { mode: "connecting" | "live" | "re
 
 export function LivePanel() {
   const liveUrl = process.env.NEXT_PUBLIC_LIVE_URL || undefined
-  const { mode, book, history, capturedAt, error } = useLiveFeed(liveUrl)
+  const { mode, book, history, latency, capturedAt, error } = useLiveFeed(liveUrl)
+  const { trades, connected } = useTrades(mode === "live")
   const ladder = useMemo(() => (book ? buildLadder(book.bids, book.asks, DEPTH) : null), [book])
   const chartData = useMemo(() => history.map((mid, i) => ({ i, mid })), [history])
-  const range = useMemo(() => {
-    if (history.length === 0) return [0, 1] as [number, number]
-    const lo = Math.min(...history)
-    const hi = Math.max(...history)
-    const pad = Math.max((hi - lo) * 0.2, 1)
-    return [lo - pad, hi + pad] as [number, number]
-  }, [history])
+  const range = useMemo(() => tightDomain(history, { minSpan: 2 }), [history])
 
   if (!book || !ladder) {
     if (error && !liveUrl) return <p className="text-sm text-destructive">Could not load the recorded session: {error}</p>
@@ -71,7 +71,7 @@ export function LivePanel() {
             <CardDescription>Level 2: total size at each price, rebuilt by the C++ engine from the raw feed.</CardDescription>
           </CardHeader>
           <CardContent>
-            <LadderView ladder={ladder} depth={DEPTH} sizeDigits={4} />
+            <LadderView ladder={ladder} depth={DEPTH} sizeDigits={4} flash />
           </CardContent>
         </Card>
 
@@ -86,10 +86,20 @@ export function LivePanel() {
                 <LineChart data={chartData} margin={{ left: 4, right: 12, top: 8 }}>
                   <CartesianGrid vertical={false} />
                   <XAxis dataKey="i" hide />
-                  <YAxis domain={range} width={64} tickFormatter={(v: number) => v.toFixed(0)} />
+                  <YAxis domain={range} width={76} tickFormatter={(v: number) => v.toFixed(2)} />
                   <Line dataKey="mid" stroke="var(--color-mid)" strokeWidth={1.5} dot={false} isAnimationActive={false} />
                 </LineChart>
               </ChartContainer>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Depth</CardTitle>
+              <CardDescription>How much Bitcoin is waiting at each price. Buyers on the left, sellers on the right; steep walls are big orders.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DepthChart bids={book.bids} asks={book.asks} />
             </CardContent>
           </Card>
 
@@ -102,6 +112,29 @@ export function LivePanel() {
             <StatCard label="Sequence gaps" value={formatInt(book.stats.gaps)} hint={`${formatInt(book.stats.crossedEvents)} crossed-book events`} />
           </div>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="min-w-0">
+          <CardHeader>
+            <CardTitle>Recent trades</CardTitle>
+            <CardDescription>
+              {mode === "live"
+                ? "Streamed from Coinbase straight to your browser. The C++ engine rebuilds the book; it does not see trades."
+                : "Trades appear when the page is connected to the live engine."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>{mode === "live" ? <TradeTape trades={trades} connected={connected} /> : <p className="text-sm text-muted-foreground">Not connected.</p>}</CardContent>
+        </Card>
+        <Card className="min-w-0">
+          <CardHeader>
+            <CardTitle>Engine time per message</CardTitle>
+            <CardDescription>Measured by the C++ engine itself while you watch. Typical is the median; the slow end is the 99th percentile.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <LatencyChart points={latency} />
+          </CardContent>
+        </Card>
       </div>
 
       <p className="max-w-3xl text-sm text-muted-foreground">

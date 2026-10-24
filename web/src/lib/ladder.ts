@@ -38,3 +38,26 @@ export function buildLadder(bids: Level[], asks: Level[], depth: number): Ladder
     state: stateOf(shownBids, shownAsks),
   }
 }
+
+export type Flash = "grew" | "shrank"
+
+export function diffLevels(previous: readonly Level[], next: readonly Level[]): Map<number, Flash> {
+  const before = new Map(previous.map((l) => [l.price, l.size]))
+  const flashes = new Map<number, Flash>()
+  for (const { price, size } of next) {
+    const old = before.get(price)
+    if (old === undefined || size > old) flashes.set(price, "grew")
+    else if (size < old) flashes.set(price, "shrank")
+  }
+  return flashes
+}
+
+export type DepthPoint = { price: number; total: number }
+
+function accumulate(levels: readonly Level[]): DepthPoint[] {
+  return levels.reduce<DepthPoint[]>((points, { price, size }) => [...points, { price, total: (points.at(-1)?.total ?? 0) + size }], [])
+}
+
+export function cumulativeDepth(bids: readonly Level[], asks: readonly Level[]): { bids: DepthPoint[]; asks: DepthPoint[] } {
+  return { bids: accumulate(bids).reverse(), asks: accumulate(asks) }
+}

@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { pushWindow } from "@/lib/series"
 import { type LiveBook, type LiveSample, parseLiveBook, parseLiveSample } from "@/lib/live"
 
 export type FeedMode = "connecting" | "live" | "recorded"
@@ -9,10 +10,13 @@ const POLL_MS = 250
 const FAILURES_BEFORE_FALLBACK = 3
 const HISTORY = 240
 
+export type LatencyPoint = { p50Ns: number; p99Ns: number; msgsPerSec: number }
+
 export type LiveFeed = {
   mode: FeedMode
   book: LiveBook | null
   history: number[]
+  latency: LatencyPoint[]
   capturedAt: string | null
   error: string | null
 }
@@ -27,6 +31,7 @@ export function useLiveFeed(liveUrl: string | undefined): LiveFeed {
   const [mode, setMode] = useState<FeedMode>(liveUrl ? "connecting" : "recorded")
   const [book, setBook] = useState<LiveBook | null>(null)
   const [history, setHistory] = useState<number[]>([])
+  const [latency, setLatency] = useState<LatencyPoint[]>([])
   const [sample, setSample] = useState<LiveSample | null>(null)
   const [error, setError] = useState<string | null>(null)
   const failures = useRef(0)
@@ -35,7 +40,9 @@ export function useLiveFeed(liveUrl: string | undefined): LiveFeed {
   function remember(next: LiveBook) {
     setBook(next)
     const mid = midOf(next)
-    if (mid !== null) setHistory((h) => [...h.slice(-(HISTORY - 1)), mid])
+    if (mid !== null) setHistory((h) => pushWindow(h, mid, HISTORY))
+    const { p50Ns, p99Ns, msgsPerSec } = next.stats
+    setLatency((l) => pushWindow(l, { p50Ns, p99Ns, msgsPerSec }, HISTORY))
   }
 
   useEffect(() => {
@@ -84,12 +91,15 @@ export function useLiveFeed(liveUrl: string | undefined): LiveFeed {
     if (mode !== "recorded" || !sample || sample.frames.length === 0) return
     const timer = setInterval(() => {
       frame.current = (frame.current + 1) % sample.frames.length
-      if (frame.current === 0) setHistory([])
+      if (frame.current === 0) {
+        setHistory([])
+        setLatency([])
+      }
       remember(sample.frames[frame.current])
     }, sample.intervalS * 1000)
     remember(sample.frames[frame.current])
     return () => clearInterval(timer)
   }, [mode, sample])
 
-  return { mode, book, history, capturedAt: sample?.capturedAt ?? null, error }
+  return { mode, book, history, latency, capturedAt: sample?.capturedAt ?? null, error }
 }

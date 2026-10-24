@@ -13,6 +13,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { formatClock, formatInt } from "@/lib/format"
 import { type ItchDay, messageMix, midPrice, parseItchDay, sessionOpenIndex } from "@/lib/itch"
 import { buildLadder } from "@/lib/ladder"
+import { firstQuotedIndex } from "@/lib/series"
 
 const DEPTH = 10
 const SPEEDS = ["1", "4", "12"] as const
@@ -57,7 +58,7 @@ function Replay({ day }: { day: ItchDay }) {
   const [symbol, setSymbol] = useState(names[0])
   const snapshots = day.symbols[symbol].snapshots
   const [index, setIndex] = useState(() => sessionOpenIndex(day.symbols[names[0]].snapshots))
-  const [playing, setPlaying] = useState(false)
+  const [playing, setPlaying] = useState(() => !window.matchMedia("(prefers-reduced-motion: reduce)").matches)
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>("4")
 
   useEffect(() => {
@@ -78,6 +79,8 @@ function Replay({ day }: { day: ItchDay }) {
   const snapshot = snapshots[Math.min(index, snapshots.length - 1)]
   const ladder = useMemo(() => buildLadder(snapshot.bids, snapshot.asks, DEPTH), [snapshot])
   const priceData = useMemo(() => snapshots.map((s, i) => ({ i, mid: midPrice(s) })), [snapshots])
+  const firstQuote = useMemo(() => firstQuotedIndex(priceData.map((d) => d.mid)), [priceData])
+  const quotedData = useMemo(() => priceData.slice(firstQuote), [priceData, firstQuote])
   const priceDomain = useMemo(() => {
     const mids = priceData.map((d) => d.mid).filter((m): m is number => m !== null)
     return [Math.floor(Math.min(...mids)), Math.ceil(Math.max(...mids))] as [number, number]
@@ -90,7 +93,6 @@ function Replay({ day }: { day: ItchDay }) {
   const mix = useMemo(() => messageMix(day), [day])
 
   function pick(name: string) {
-    setPlaying(false)
     setSymbol(name)
     setIndex(sessionOpenIndex(day.symbols[name].snapshots))
   }
@@ -163,18 +165,18 @@ function Replay({ day }: { day: ItchDay }) {
             <CardContent>
               <ChartContainer config={priceConfig} className="h-64 w-full">
                 <LineChart
-                  data={priceData}
+                  data={quotedData}
                   margin={{ left: 4, right: 12, top: 8 }}
                   onClick={(state) => {
                     const i = Number(state?.activeTooltipIndex)
                     if (Number.isFinite(i)) {
                       setPlaying(false)
-                      setIndex(i)
+                      setIndex(firstQuote + i)
                     }
                   }}
                 >
                   <CartesianGrid vertical={false} />
-                  <XAxis dataKey="i" type="number" domain={[0, snapshots.length - 1]} tickFormatter={(i: number) => formatClock(snapshots[Math.min(i, snapshots.length - 1)].time).slice(0, 5)} tickCount={7} />
+                  <XAxis dataKey="i" type="number" domain={[firstQuote, snapshots.length - 1]} allowDataOverflow tickFormatter={(i: number) => formatClock(snapshots[Math.min(i, snapshots.length - 1)].time).slice(0, 5)} tickCount={7} />
                   <YAxis domain={priceDomain} width={56} tickFormatter={(v: number) => v.toFixed(0)} />
                   <ChartTooltip content={<ChartTooltipContent labelFormatter={(_, p) => formatClock(snapshots[Number(p?.[0]?.payload?.i ?? 0)]?.time ?? 0)} />} />
                   <Line dataKey="mid" stroke="var(--color-mid)" strokeWidth={1.5} dot={false} connectNulls isAnimationActive={false} />
