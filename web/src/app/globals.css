@@ -180,3 +180,24 @@
     radial-gradient(44rem 22rem at 92% 4%, color-mix(in oklab, var(--ask) 20%, transparent), transparent 70%);
   mask-image: linear-gradient(to bottom, black 40%, transparent);
 }
+
+@keyframes flow {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 1.5rem 0;
+  }
+}
+
+.flow-line {
+  background-image: linear-gradient(90deg, currentColor 50%, transparent 50%);
+  background-size: 0.75rem 100%;
+  animation: flow 0.8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-line {
+    animation: none;
+  }
+}

@@ -1,20 +1,13 @@
-import { ArrowRight, Cpu, FlaskConical, Gauge, Layers, Radio, Scale, ShieldCheck, Timer, Zap } from "lucide-react"
+import { ArrowRight, FlaskConical, Gauge, Scale, ShieldCheck, Timer, Zap } from "lucide-react"
 import Link from "next/link"
 import { BenchmarkPanel } from "@/components/benchmark-panel"
 import { CountUp } from "@/components/count-up"
+import { FlowDiagram } from "@/components/flow-diagram"
 import { HeroBook } from "@/components/hero-book"
-import { InfoTip } from "@/components/info-tip"
-import { PipelineDiagram } from "@/components/pipeline-diagram"
 import { buttonVariants } from "@/components/ui/button"
 import { benchmark } from "@/lib/benchmarks"
 import { getDaySummary } from "@/lib/summary"
 import { cn } from "@/lib/utils"
-
-const steps = [
-  { icon: Radio, text: "The exchange sends a message for every order", tip: "That raw feed is called ITCH: one tiny message each time an order is placed, changed, cancelled or filled." },
-  { icon: Cpu, text: "The C++ engine rebuilds the book", tip: null },
-  { icon: Layers, text: "You see every price level move", tip: null },
-] as const
 
 const buildUses = (day: { messages: number }) => [
   { icon: Scale, title: "Know the real price", line: "Depth shows what a big order would actually pay.", href: "/live", tone: "bid" },
@@ -79,18 +72,7 @@ export default async function Home() {
 
       <section className="space-y-4">
         <h2 className="text-2xl font-bold">How it works</h2>
-        <ol className="grid gap-3 md:grid-cols-3">
-          {steps.map((s, i) => (
-            <li key={s.text} className="relative flex items-center gap-3 rounded-xl bg-card p-4 ring-1 ring-foreground/10">
-              <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-full bg-accent text-foreground">
-                <s.icon className="size-5" />
-              </span>
-              <span className="text-sm font-medium">{s.text}</span>
-              {s.tip ? <InfoTip>{s.tip}</InfoTip> : null}
-              {i < steps.length - 1 ? <ArrowRight aria-hidden className="absolute -right-3.5 top-1/2 z-10 hidden size-4 -translate-y-1/2 text-muted-foreground md:block" /> : null}
-            </li>
-          ))}
-        </ol>
+        <FlowDiagram />
       </section>
 
       <section className="space-y-4">
@@ -113,7 +95,6 @@ export default async function Home() {
         <details className="rounded-xl border p-4">
           <summary className="cursor-pointer font-semibold">For engineers: how it is built and how fast</summary>
           <div className="space-y-6 pt-4">
-            <PipelineDiagram />
             <BenchmarkPanel />
           </div>
         </details>
