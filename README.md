@@ -16,7 +16,7 @@ A second program, `live_book`, rebuilds a live book from Coinbase's public `l2_d
 ```
 orderbook-lab stream --product BTC-USD | ./build/live_book --bind 127.0.0.1 --port 8080
 ```
-It listens on localhost only by default. On the droplet it runs as a systemd service and is viewed through an SSH tunnel.
+It listens on localhost only by default. On the droplet it runs as a systemd service behind Caddy, which serves HTTPS on a free `sslip.io` name and forwards only `GET /book` and `GET /healthz` to the engine.
 
 - `include/live/l2_parser.hpp`, `l2_book.hpp`, `live_stats.hpp`, `render.hpp`: parser, book, sequence-gap and latency tracking, JSON rendering. All unit tested.
 - Verified by replaying 2,764,755 recorded messages (60,076,531 level updates, 87 snapshots) through `live_book --dump-final`: the final best bid and ask match the Python replay of the same recordings exactly, with zero sequence gaps and zero crossed books.
