@@ -18,11 +18,11 @@ export function SiteHeader() {
   const { resolvedTheme, setTheme } = useTheme()
   return (
     <header className="sticky top-0 z-30 border-b bg-background/85 backdrop-blur">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 px-4">
-        <Link href="/" className="shrink-0 whitespace-nowrap font-heading text-lg font-bold tracking-tight">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4">
+        <Link href="/" className="shrink-0 whitespace-nowrap font-heading text-lg font-bold tracking-tight sm:text-2xl">
           Book Lab
         </Link>
-        <nav aria-label="Main" className="flex items-center gap-1 text-sm">
+        <nav aria-label="Main" className="flex items-center gap-1 text-sm sm:gap-4 sm:text-lg">
           {links.map((link) => {
             const active = link.href === "/" ? pathname === "/" : pathname.startsWith(link.href)
             return (
@@ -31,7 +31,7 @@ export function SiteHeader() {
                 href={link.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "whitespace-nowrap rounded-md px-2.5 py-1.5 transition-colors hover:bg-accent sm:px-3",
+                  "whitespace-nowrap rounded-lg px-3 py-2 transition-colors hover:bg-accent sm:px-6 sm:py-2.5",
                   active ? "bg-accent font-medium text-foreground" : "text-muted-foreground",
                 )}
               >
