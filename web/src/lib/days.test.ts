@@ -13,8 +13,8 @@ describe("parseDayIndex", () => {
 })
 
 describe("dayLabel", () => {
-  it("shows weekday and date without shifting for time zones", () => {
-    expect(dayLabel("2025-12-08")).toBe("Mon 8 Dec")
-    expect(dayLabel("2025-11-28")).toBe("Fri 28 Nov")
+  it("shows weekday, date and year without shifting for time zones", () => {
+    expect(dayLabel("2025-12-08")).toBe("Mon 8 Dec 2025")
+    expect(dayLabel("2025-11-28")).toBe("Fri 28 Nov 2025")
   })
 })

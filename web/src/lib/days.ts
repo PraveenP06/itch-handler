@@ -23,5 +23,5 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 export function dayLabel(date: string): string {
   const [year, month, day] = date.split("-").map(Number)
   const weekday = new Date(Date.UTC(year, month - 1, day)).getUTCDay()
-  return `${WEEKDAYS[weekday]} ${day} ${MONTHS[month - 1]}`
+  return `${WEEKDAYS[weekday]} ${day} ${MONTHS[month - 1]} ${year}`
 }

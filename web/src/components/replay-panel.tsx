@@ -86,7 +86,7 @@ export function ReplayPanel() {
           ))}
         </ToggleGroup>
       ) : null}
-      {loaded?.date === date ? <Replay key={date} day={loaded.day} symbol={symbol} onSymbol={setSymbol} /> : <ReplaySkeleton />}
+      {loaded?.date === date ? <Replay key={date} date={date} day={loaded.day} symbol={symbol} onSymbol={setSymbol} /> : <ReplaySkeleton />}
     </div>
   )
 }
@@ -123,9 +123,9 @@ function Tile({ icon: Icon, tone, label, children }: TileProps) {
   )
 }
 
-type ReplayProps = { day: ItchDay; symbol: string; onSymbol: (symbol: string) => void }
+type ReplayProps = { date: string; day: ItchDay; symbol: string; onSymbol: (symbol: string) => void }
 
-function Replay({ day, symbol: requested, onSymbol }: ReplayProps) {
+function Replay({ date, day, symbol: requested, onSymbol }: ReplayProps) {
   const names = Object.keys(day.symbols)
   const symbol = names.includes(requested) ? requested : names[0]
   const snapshots = day.symbols[symbol].snapshots
@@ -175,7 +175,7 @@ function Replay({ day, symbol: requested, onSymbol }: ReplayProps) {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Tile icon={Zap} tone="bid" label="messages that day">
+        <Tile icon={Zap} tone="bid" label={`messages on ${dayLabel(date)}`}>
           <CountUp value={day.messages} />
         </Tile>
         <Tile icon={ShieldCheck} tone="ok" label="book errors">
