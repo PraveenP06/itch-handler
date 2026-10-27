@@ -1,6 +1,22 @@
 # itch-handler
 
-A C++20 NASDAQ ITCH 5.0 feed handler and limit order book. It replays a real full day of NASDAQ order-by-order data (Level 3), rebuilds every stock's book, and measures how fast it does that.
+**A C++20 engine that rebuilds a stock exchange's order book from raw NASDAQ ITCH 5.0 messages, then runs the same idea live on Bitcoin.**
+
+**[Live demo](https://itch-handler.vercel.app)** · [Replay a NASDAQ day](https://itch-handler.vercel.app/replay) · [Watch Bitcoin live](https://itch-handler.vercel.app/live)
+
+![Overview of the site: a live Bitcoin order book beside the headline results](docs/overview.jpg)
+
+An order book is the list of everyone's offers to buy and sell. The exchange sends one tiny message for every order placed, changed, cancelled or filled; replaying them in order rebuilds the book at any moment.
+
+| Result | Measured |
+|---|---|
+| Real NASDAQ messages replayed | 4,138,857,296 over six trading days (28 Nov and 8 to 12 Dec 2025) |
+| Book errors, orders left open at any close | 0 and 0 |
+| Parse plus book update, one thread (Apple M4, in memory) | 12 to 16 million messages per second |
+| Parser alone | 221 million messages per second |
+| Median time per message | 57 ns (mean over batches of 32) |
+
+The benchmark numbers come from one laptop reading from memory, so they exclude network and operating system costs. The NASDAQ data is a recorded sample, not a live feed.
 
 ## What is here
 - `include/itch/parser.hpp`: zero-allocation decoder for the order-book-relevant ITCH 5.0 messages (S, R, A, F, E, C, X, D, U).
